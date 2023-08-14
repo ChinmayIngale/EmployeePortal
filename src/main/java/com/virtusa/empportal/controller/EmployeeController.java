@@ -20,8 +20,10 @@ import com.virtusa.empportal.model.Employees;
 import com.virtusa.empportal.model.EmployeesLeaves;
 import com.virtusa.empportal.model.Leaves;
 import com.virtusa.empportal.model.Messages;
+import com.virtusa.empportal.model.Reference;
 import com.virtusa.empportal.service.EmailService;
 import com.virtusa.empportal.service.EmployeeService;
+import com.virtusa.empportal.service.JobService;
 import com.virtusa.empportal.service.LeavesService;
 import com.virtusa.empportal.service.MessageService;
 import com.virtusa.empportal.utils.Response;
@@ -40,15 +42,18 @@ public class EmployeeController {
 	
 	@Autowired
 	private EmailService emailService;
-	
+
 	@Autowired
 	private LeavesService leavesService;
-
-	@GetMapping("/mail")
-	public Response sendmail(){
-		return emailService.sendSimpleMessage("chinmayi@virtusa.com", "Hello", "Hello");
-		
-	}
+	
+	@Autowired
+	private JobService jobService;
+//
+//	@GetMapping("/mail")
+//	public Response sendmail(){
+//		return emailService.sendSimpleMessage("chinmayi@virtusa.com", "Hello", "Hello");
+//		
+//	}
 	
 	@GetMapping("/all")
 	public Response getAllEmployeeList(){
@@ -134,21 +139,14 @@ public class EmployeeController {
 		}
 	}
 	
+	@PostMapping("/{empId}/reference")
+	public Response postReference(@PathVariable String empId, @RequestBody Reference reference) {
+		try {
+			int employeeId = Integer.parseInt(empId);
+			return jobService.giveReference(employeeId, reference);
+		} catch(NumberFormatException exception) {
+			return new Response(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Can not convert "+empId+" to integer", null);
+		}
+	}
 
 }
-
-//<dependency>
-//<groupId>org.springframework.security</groupId>
-//<artifactId>spring-security-web</artifactId>
-//<version>6.1.2</version>
-//</dependency>
-//<dependency>
-//<groupId>org.springframework.security</groupId>
-//<artifactId>spring-security-core</artifactId>
-//<version>6.1.2</version>
-//</dependency>
-//<dependency>
-//<groupId>org.springframework.security</groupId>
-//<artifactId>spring-security-config</artifactId>
-//<version>6.1.2</version>
-//</dependency>

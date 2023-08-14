@@ -28,7 +28,7 @@ public class DepartmentController {
 		return departmentService.addDepartment(department);
 	}
 	
-	@GetMapping("/")
+	@GetMapping()
 	public Response getDepartments() {
 		return departmentService.getAllDepartments();
 	}

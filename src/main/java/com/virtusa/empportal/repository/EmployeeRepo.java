@@ -23,6 +23,8 @@ public interface EmployeeRepo extends JpaRepository<Employees, Integer>{
 
 	Optional<Employees> findByLeaves(Leaves leaves);
 
+	Optional<Employees> findByEmail(String email);
+
 
 
 }
