@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -24,7 +25,7 @@ public class SecurityConfig {
 	JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	@Autowired
 	JwtAuthenticationFilter jwtAuthenticationFilter;
-	
+
 	@Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -40,10 +41,11 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 	    http.csrf(csrf -> csrf.disable())
 	    	.authorizeHttpRequests(request -> request
-	    			.requestMatchers("/jobVacancy/hr/**").hasAuthority("HR")
-					.requestMatchers("/leaveMaster","/leaveMaster/**").hasAuthority("LEAVEMASTER")
-					.requestMatchers("/auth/**","/employee/addEmp","/employee/all").permitAll()
-					.requestMatchers("/**").hasAuthority("EMPLOYEE")
+//	    			.requestMatchers("/jobVacancy/hr/**").hasAuthority("HR")
+//					.requestMatchers("/leaveMaster","/leaveMaster/**").hasAuthority("LEAVEMASTER")
+//					.requestMatchers("/auth/**","/employee/addEmp","/employee/all").permitAll()
+//					.requestMatchers("/**").hasAuthority("EMPLOYEE")
+					.requestMatchers("/**").permitAll()
 	    			.anyRequest().authenticated())
 	    	.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 	    	.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

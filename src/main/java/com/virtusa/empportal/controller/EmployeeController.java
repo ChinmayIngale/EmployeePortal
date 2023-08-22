@@ -2,6 +2,7 @@ package com.virtusa.empportal.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.virtusa.empportal.model.Employees;
 import com.virtusa.empportal.model.EmployeesLeaves;
 import com.virtusa.empportal.model.Leaves;
@@ -28,6 +34,7 @@ import com.virtusa.empportal.service.LeavesService;
 import com.virtusa.empportal.service.MessageService;
 import com.virtusa.empportal.utils.Response;
 
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 
 @RestController
@@ -140,10 +147,16 @@ public class EmployeeController {
 	}
 	
 	@PostMapping("/{empId}/reference")
-	public Response postReference(@PathVariable String empId, @RequestBody Reference reference) {
+	public Response postReference(@PathVariable String empId,@RequestParam String referenceData, @RequestParam MultipartFile resume){
+		
+			return jobService.giveReference(empId, referenceData, resume);
+	}
+	
+	@GetMapping("/{empId}/reference")
+	public Response getReferredPeople(@PathVariable String empId) {
 		try {
 			int employeeId = Integer.parseInt(empId);
-			return jobService.giveReference(employeeId, reference);
+			return jobService.getAllPeopleReferredByEmployee(employeeId);
 		} catch(NumberFormatException exception) {
 			return new Response(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Can not convert "+empId+" to integer", null);
 		}

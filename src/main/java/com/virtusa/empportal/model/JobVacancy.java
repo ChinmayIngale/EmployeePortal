@@ -45,5 +45,6 @@ public class JobVacancy {
 	private boolean fulfilled;
 	
 	@OneToMany(mappedBy = "job")
+	@JsonIgnoreProperties({"resume"})
 	private List<Reference> references;
 }
