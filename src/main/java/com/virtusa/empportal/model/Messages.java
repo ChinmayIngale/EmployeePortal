@@ -1,10 +1,8 @@
 package com.virtusa.empportal.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import jakarta.persistence.Column;
@@ -16,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 

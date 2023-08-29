@@ -22,6 +22,7 @@ public class DepartmentService {
 	@Autowired
 	AddressRepo addressRepo;
 
+	
 	public Response addDepartment(Department department) {
 		if(departmentRepo.existsByDeptName(department.getDeptName())) {
 			return new Response(LocalDateTime.now(), HttpStatus.BAD_REQUEST,"Departemt with same name exists", null);
@@ -41,10 +42,10 @@ public class DepartmentService {
 	public Response softDeleteDepartment(int id) {
 		Department dept = departmentRepo.findById(id).orElse(null);
 		if(dept == null) {
-			return new Response(LocalDateTime.now(), HttpStatus.NOT_FOUND, dept.getDeptName()+" Department not found", "ERROR");
+			return new Response(LocalDateTime.now(), HttpStatus.NOT_FOUND,"Department with id "+id+" not found", "ERROR");
 		} else if(!dept.isActive()){
 			return new Response(LocalDateTime.now(), HttpStatus.NOT_FOUND, dept.getDeptName()+" Department already deleted", null);
-		} else if(dept.getEmployees().size() != 0){
+		} else if(!dept.getEmployees().isEmpty()){
 			return new Response(LocalDateTime.now(), HttpStatus.CONFLICT, dept.getDeptName()+" department still has employees", null);
 		} else {
 			dept.setActive(false);

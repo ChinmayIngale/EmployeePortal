@@ -11,8 +11,8 @@ public class OverboundReport {
 	
 	@JsonIncludeProperties({"empID","email","username"})
 	Employees employee;
-	int LeavesTaken;
-	int LeavesRemaining;
+	int leavesTaken;
+	int leavesRemaining;
 	int overboundLeaves;
 
 }

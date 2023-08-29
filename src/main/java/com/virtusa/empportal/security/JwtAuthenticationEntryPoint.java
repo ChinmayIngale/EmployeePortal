@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -38,8 +37,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		
 		mapper.writeValue(response.getOutputStream(), body);
 		
-//		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-//response.flushBuffer();
 	}
 
 }

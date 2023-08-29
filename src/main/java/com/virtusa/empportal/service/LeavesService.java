@@ -12,17 +12,13 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 import com.virtusa.empportal.model.Employees;
 import com.virtusa.empportal.model.EmployeesLeaves;
 import com.virtusa.empportal.model.LeaveMaster;
 import com.virtusa.empportal.model.LeaveReport;
 import com.virtusa.empportal.model.Leaves;
-import com.virtusa.empportal.model.Messages;
 import com.virtusa.empportal.model.OverboundReport;
-import com.virtusa.empportal.model.Reference;
 import com.virtusa.empportal.repository.EmployeeRepo;
 import com.virtusa.empportal.repository.EmployeesLeavesRepo;
 import com.virtusa.empportal.repository.LeaveMasterRepo;
@@ -41,7 +37,7 @@ public class LeavesService {
 	@Autowired
 	private EmployeesLeavesRepo employeesLeavesRepo;
 	
-	final int outboundlimit = 15;
+	public static final int OUTBOUND_LIMIT = 15;
 	LocalDate currentYearStart = LocalDate.of(LocalDate.now().isAfter(LocalDate.of(LocalDate.now().getYear(),3,31)) ? LocalDate.now().getYear() : LocalDate.now().getYear()-1, 4, 1);
 	LocalDate currentYearEnd = LocalDate.of(LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(),4,1)) ? LocalDate.now().getYear() : LocalDate.now().getYear()+1, 3, 31);
 	
@@ -61,7 +57,7 @@ public class LeavesService {
 	}
 
 	public Response getEmployeeLeavesInfo(int id) {
-		Employees emp = employeeRepo.findById(id).orElse(null);
+		Employees emp = employeeRepo.findByEmpIDAndActive(id, true).orElse(null);
 		if (emp != null) {
 			Leaves empLeaves = updateEmployeeLeaveData(emp);
 			return new Response(LocalDateTime.now(), HttpStatus.OK, "Leave details", empLeaves);
@@ -78,7 +74,7 @@ public class LeavesService {
 			LeaveMaster leave = leaveMaster.get(i);
 			int sum = empLeaves.getLeavesTaken().stream().filter(leavesTaken -> leavesTaken.getLeaveMaster() == leave)
 					.filter(leaves -> leaves.getFromDate().isAfter(currentYearStart) && leaves.getFromDate().isBefore(currentYearEnd))
-					.mapToInt(leaveTaken -> leaveTaken.getDays()).sum();
+					.mapToInt(EmployeesLeaves::getDays).sum();
 			leavesTakenInCurrentYear += sum;
 			leaveMaster.get(i).setLeavesRemaining(leaveMaster.get(i).getMaxLeaveNumbers() - sum);
 
@@ -89,13 +85,14 @@ public class LeavesService {
 	}
 
 	public Response applyForLeaves(int id, EmployeesLeaves employeesLeaves) {
-		Employees emp = employeeRepo.findById(id).orElse(null);
+		Employees emp = employeeRepo.findByEmpIDAndActive(id, true).orElse(null);
 		if (emp != null) {
 			Leaves empLeaves = updateEmployeeLeaveData(emp);
-			LeaveMaster targetLeaveType = null;
+			LeaveMaster targetLeaveType = new LeaveMaster();
 			for (LeaveMaster leaveType : empLeaves.getLeavesRemaining()) {
 				if (leaveType.getLeavemasterID() == employeesLeaves.getLeaveMaster().getLeavemasterID()) {
 					targetLeaveType = leaveType;
+					break;
 				}
 			}
 
@@ -196,9 +193,9 @@ public class LeavesService {
 		
 		employees.forEach(emp -> {
 			emp.setLeaves(updateEmployeeLeaveData(emp));
-			int leavesTaken = emp.getLeaves().getLeavesTaken().stream().filter(leave -> leave.getFromDate().isAfter(currentYearStart) && leave.getFromDate().isBefore(currentYearEnd)).mapToInt(leave -> leave.getDays()).sum();
+			int leavesTaken = emp.getLeaves().getLeavesTaken().stream().filter(leave -> leave.getFromDate().isAfter(currentYearStart) && leave.getFromDate().isBefore(currentYearEnd)).mapToInt(EmployeesLeaves::getDays).sum();
 			int leavesRemaining = totalLeaves - leavesTaken;
-			int overbound = (leavesRemaining - outboundlimit < 0) ? 0 : leavesRemaining - outboundlimit;
+			int overbound = (leavesRemaining - OUTBOUND_LIMIT < 0) ? 0 : leavesRemaining - OUTBOUND_LIMIT;
 			report.add(new OverboundReport(emp, leavesTaken, leavesRemaining, overbound));
 		});
 		return new Response(LocalDateTime.now(), HttpStatus.OK,"Report fetched", report);
@@ -206,7 +203,7 @@ public class LeavesService {
 	}
 
 	public Response generateEmployeeOverboundReport(int id) {
-		Employees employee = employeeRepo.findById(id).orElse(null);
+		Employees employee = employeeRepo.findByEmpIDAndActive(id, true).orElse(null);
 		if(employee == null) {
 			return new Response(LocalDateTime.now(), HttpStatus.NOT_FOUND, "Employee not found", null);
 		}
@@ -214,10 +211,10 @@ public class LeavesService {
 		final int totalLeaves = leaveMasterRepo.sumOfAllLeaves();
 		
 		employee.setLeaves(updateEmployeeLeaveData(employee));
-		int leavesTaken = employee.getLeaves().getLeavesTaken().stream().filter(leave -> leave.getFromDate().isAfter(currentYearStart) && leave.getFromDate().isBefore(currentYearEnd)).mapToInt(leave -> leave.getDays()).sum();
+		int leavesTaken = employee.getLeaves().getLeavesTaken().stream().filter(leave -> leave.getFromDate().isAfter(currentYearStart) && leave.getFromDate().isBefore(currentYearEnd)).mapToInt(EmployeesLeaves::getDays).sum();
 		
 		int leavesRemaining = totalLeaves - leavesTaken;
-		int overbound = (leavesRemaining - outboundlimit < 0) ? 0 : leavesRemaining - outboundlimit;
+		int overbound = (leavesRemaining - OUTBOUND_LIMIT < 0) ? 0 : leavesRemaining - OUTBOUND_LIMIT;
 		OverboundReport overboundReport = new OverboundReport(employee, leavesTaken, leavesRemaining, overbound);
 		return new Response(LocalDateTime.now(), HttpStatus.OK,"Report fetched", overboundReport);
 	}

@@ -28,7 +28,6 @@ public class EmailService {
 			return new Response(LocalDateTime.now(), HttpStatus.OK, "Mail sent", null);
 		}
 		catch (Exception e) {
-			System.out.println(e);
 			return new Response(LocalDateTime.now(), HttpStatus.OK, "Error", e);
 		}
 

@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -53,7 +52,8 @@ public class LeaveMasterController {
 	@GetMapping("/leaveReport")
 	public Response getLeaveReport(@RequestParam @Nullable String from, @RequestParam @Nullable String to, @RequestBody @Nullable LeaveMaster leaveType) {
 		try {
-			LocalDate fromDate = null,toDate = null;
+			LocalDate fromDate = null;
+			LocalDate toDate = null;
 			if(from != null) {
 			fromDate = LocalDate.parse(from, DateTimeFormatter.ISO_LOCAL_DATE);
 			}

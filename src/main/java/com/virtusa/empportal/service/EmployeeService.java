@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -56,12 +54,13 @@ public class EmployeeService {
 		if(employeeRepo.existsByEmail(emp.getEmail())) {
 			return new Response(LocalDateTime.now(), HttpStatus.BAD_REQUEST,"Employee already exists", null);
 		}
+		
 		Designation designation = designationRepo.findById(emp.getDesignation().getDesignationID()).orElse(null);
 		if(designation == null) {
 			return new Response(LocalDateTime.now(), HttpStatus.BAD_REQUEST,"Designation not exists", null);
 		}
 		Department dept = departmentRepo.findById(emp.getEmpDepartment().getDepartmentID()).orElse(null);
-		if(dept == null && dept.isActive()) {
+		if(dept == null || dept.isActive()) {
 			return new Response(LocalDateTime.now(), HttpStatus.BAD_REQUEST,"Department not exists", null);
 		}
 		

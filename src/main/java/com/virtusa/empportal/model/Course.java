@@ -10,28 +10,29 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
 @Entity
-public class Leaves {
-	
+public class Course {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "leaves_ID")
-	private int leavesID;
+    @Column(name = "course_ID")
+	private int courseId;
 	
-	@OneToMany(mappedBy = "leaves")
-	@JsonIgnoreProperties({"leaves"})
-	private List<EmployeesLeaves> leavesTaken;
+	@Column(nullable = false, unique = true)
+	private String title;
 	
-	private int totalLeaveTaken;
+	@Column(nullable = false)
+	private String description;
 	
-	@Transient
-	private int leavesTakenInCurrentYear;
+	@OneToMany(mappedBy = "course")
+	@Column(nullable = false)
+	@JsonIgnoreProperties({"course"})
+	private List<Chapter> chapters;
 	
-	@Transient
-	private List<LeaveMaster> leavesRemaining;
+	@Column(nullable = false)
+	private int numberOfChapters;
 	
+	private boolean active;
 }

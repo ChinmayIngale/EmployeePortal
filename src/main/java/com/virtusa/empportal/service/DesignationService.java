@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.virtusa.empportal.model.Address;
-import com.virtusa.empportal.model.Department;
 import com.virtusa.empportal.model.Designation;
 import com.virtusa.empportal.repository.DesignationRepo;
 import com.virtusa.empportal.utils.Response;

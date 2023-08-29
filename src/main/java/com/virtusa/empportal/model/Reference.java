@@ -1,6 +1,5 @@
 package com.virtusa.empportal.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.virtusa.empportal.utils.ReferanceStatus;
 

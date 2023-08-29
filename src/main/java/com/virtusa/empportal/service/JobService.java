@@ -1,6 +1,5 @@
 package com.virtusa.empportal.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virtusa.empportal.model.Employees;
 import com.virtusa.empportal.model.JobVacancy;
@@ -93,7 +91,7 @@ public class JobService {
 			reference.setEmployee(emp);
 			
 			if(resume.getSize() > 2097152) {
-				float sizeinKB = resume.getSize()/1024;
+				float sizeinKB = resume.getSize()/1024f;
 				if(sizeinKB < 1024) {
 					return new Response(LocalDateTime.now(), HttpStatus.NOT_FOUND, "file size must be lower than 2MB", "Current file size is: "+sizeinKB+"KB");
 				} else {

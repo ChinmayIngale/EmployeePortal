@@ -16,6 +16,8 @@ import com.virtusa.empportal.model.Department;
 import com.virtusa.empportal.service.DepartmentService;
 import com.virtusa.empportal.utils.Response;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping(path = "/department")
 public class DepartmentController {
@@ -24,21 +26,29 @@ public class DepartmentController {
 	private DepartmentService departmentService;
 
 	@PostMapping("/addDepartment")
-	public Response addDepartment(@RequestBody Department department) {
-		return departmentService.addDepartment(department);
+	public Response addDepartment(@RequestBody Department department, HttpServletResponse res) {
+		Response response = departmentService.addDepartment(department);
+		res.setStatus(response.getStatus().value());
+		return response;
+		
 	}
 	
 	@GetMapping()
-	public Response getDepartments() {
-		return departmentService.getAllDepartments();
+	public Response getDepartments(HttpServletResponse res) {
+		Response response = departmentService.getAllDepartments();
+		res.setStatus(response.getStatus().value());
+		return response;
 	}
 	
 	@DeleteMapping("/remove/{id}")
-	public Response deleteDepartment(@PathVariable String id) {
+	public Response deleteDepartment(@PathVariable String id, HttpServletResponse res) {
 		try {
 			int employeeId = Integer.parseInt(id);
-			return departmentService.softDeleteDepartment(employeeId);
+			Response response = departmentService.softDeleteDepartment(employeeId);
+			res.setStatus(response.getStatus().value());
+			return response;
 		} catch(NumberFormatException exception) {
+			res.setStatus(400);
 			return new Response(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Can not convert "+id+" to integer", null);
 		}
 	}
